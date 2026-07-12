@@ -113,17 +113,51 @@ def test_auto_pause_transition_logic():
     fake = types.SimpleNamespace(config={"auto_pause": True})
     handler = app_mod.AurisApp._maybe_auto_pause
 
+    out = protocol.decode(_mfg("0719010e20219a4600" + "00" * 18))   # in_ear False
+    back = protocol.decode(_mfg("0719010e20239a4600" + "00" * 18))  # in_ear True
+
     orig_play, orig_pause = app_mod.media.play, app_mod.media.pause
     app_mod.media.play = lambda: events.append("play")
     app_mod.media.pause = lambda: events.append("pause")
     try:
-        out = protocol.decode(_mfg("0719010e20219a4600" + "00" * 18))   # in_ear False
-        handler(fake, dev, out)                                          # -> pause
-        back = protocol.decode(_mfg("0719010e20239a4600" + "00" * 18))  # in_ear True
-        handler(fake, dev, back)                                         # -> play
+        # One stray "out" reading must NOT act (debounce = 2).
+        handler(fake, dev, out)
+        assert events == [], "acted before debounce threshold"
+        # Second consistent "out" reading -> pause.
+        handler(fake, dev, out)
+        # Two consistent "in" readings -> play.
+        handler(fake, dev, back)
+        handler(fake, dev, back)
     finally:
         app_mod.media.play, app_mod.media.pause = orig_play, orig_pause
     assert events == ["pause", "play"], events
+
+
+def test_auto_pause_ignores_single_noisy_reading():
+    import types
+
+    try:
+        from auris import app as app_mod
+    except ImportError:
+        print("  skip test_auto_pause_ignores_single_noisy_reading (no pystray)")
+        return
+
+    events = []
+    in_ear = protocol.decode(_mfg("0719010e20239a4600" + "00" * 18))
+    dev = app_mod.Device("AA", in_ear)  # starts in-ear
+    fake = types.SimpleNamespace(config={"auto_pause": True})
+    handler = app_mod.AurisApp._maybe_auto_pause
+
+    out = protocol.decode(_mfg("0719010e20219a4600" + "00" * 18))
+    orig_play, orig_pause = app_mod.media.play, app_mod.media.pause
+    app_mod.media.play = lambda: events.append("play")
+    app_mod.media.pause = lambda: events.append("pause")
+    try:
+        handler(fake, dev, out)     # one noisy out
+        handler(fake, dev, in_ear)  # immediately back in -> candidate cancelled
+    finally:
+        app_mod.media.play, app_mod.media.pause = orig_play, orig_pause
+    assert events == [], events
 
 
 if __name__ == "__main__":

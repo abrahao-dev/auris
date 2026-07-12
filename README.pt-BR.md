@@ -16,7 +16,9 @@ fechado como o MagicPods.
 
 [English](README.md) · **Português (Brasil)**
 
-<img src="docs/preview.png" alt="Ícones de bateria do Auris na bandeja" width="560">
+<img src="docs/demo.gif" alt="Anel de bateria do Auris animando" width="132">
+
+<img src="docs/preview.png" alt="Estados do ícone de bateria do Auris" width="560">
 
 </div>
 

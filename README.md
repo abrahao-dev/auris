@@ -15,7 +15,9 @@ A free, transparent alternative to closed-source apps like MagicPods.
 
 **English** · [Português (Brasil)](README.pt-BR.md)
 
-<img src="docs/preview.png" alt="Auris tray battery icons" width="560">
+<img src="docs/demo.gif" alt="Auris battery ring animating" width="132">
+
+<img src="docs/preview.png" alt="Auris tray battery icon states" width="560">
 
 </div>
 

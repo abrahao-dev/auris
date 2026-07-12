@@ -1,0 +1,23 @@
+PackageIdentifier: Abrahao.Auris
+PackageVersion: 0.3.0
+PackageLocale: en-US
+Publisher: Auris contributors
+PublisherUrl: https://github.com/abrahao-dev/auris
+PackageName: Auris
+PackageUrl: https://github.com/abrahao-dev/auris
+License: MIT
+LicenseUrl: https://github.com/abrahao-dev/auris/blob/main/LICENSE
+ShortDescription: Open-source AirPods & Bluetooth-earbuds companion for Windows.
+Description: |-
+  Auris shows your AirPods / Beats battery (left, right and case), charging
+  state and low-battery alerts from the system tray. A free, transparent
+  alternative to closed-source apps, with optional auto-pause and start-with-system.
+Moniker: auris
+Tags:
+  - airpods
+  - beats
+  - bluetooth
+  - battery
+  - tray
+ManifestType: defaultLocale
+ManifestVersion: 1.6.0

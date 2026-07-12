@@ -52,11 +52,34 @@ jobs:
         run: xvfb-run -a ./dist/auris-linux --selftest
         continue-on-error: true
 
+      - name: Build Windows installer (Inno Setup)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $version = "${{ github.ref_name }}".TrimStart('v')
+          if (-not $version) { $version = "0.0.0" }
+          $iscc = Get-Command iscc -ErrorAction SilentlyContinue
+          if (-not $iscc) {
+            $candidate = "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe"
+            if (-not (Test-Path $candidate)) { choco install innosetup -y --no-progress }
+            $iscc = $candidate
+          } else { $iscc = $iscc.Source }
+          & "$iscc" /DAppVersion=$version installer\auris.iss
+          Get-ChildItem dist\AurisSetup.exe
+
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.artifact }}
           path: dist/${{ matrix.artifact }}
+          if-no-files-found: error
+
+      - name: Upload installer artifact
+        if: runner.os == 'Windows'
+        uses: actions/upload-artifact@v4
+        with:
+          name: AurisSetup.exe
+          path: dist/AurisSetup.exe
           if-no-files-found: error
 
   release:

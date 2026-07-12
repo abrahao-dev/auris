@@ -2,7 +2,7 @@
 
 import sys as _sys
 
-__version__ = "0.2.0"
+__version__ = "0.3.0"
 
 # Windows consoles default to a legacy codepage (cp1252) that can't encode the
 # emoji we use in status lines (⚡). Make our stdout/stderr UTF-8 so --cli and

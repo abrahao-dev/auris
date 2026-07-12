@@ -20,6 +20,9 @@ from .config import Config
 from .models import FAMILY_SINGLE
 from .protocol import PodsStatus
 
+# In-ear changes must repeat this many advertisements before auto-pause acts.
+AUTO_PAUSE_DEBOUNCE = 2
+
 
 class Device:
     """Tracks the last-seen status of one physical device."""
@@ -29,8 +32,11 @@ class Device:
         self.status = status
         self.last_seen = time.monotonic()
         self.low_notified = False
-        # Last in-ear state we acted on, for auto-pause edge detection.
+        # Confirmed in-ear state we've acted on, plus a debounce candidate so a
+        # single noisy advertisement can't flap media playback.
         self.in_ear = status.in_ear
+        self._pending_in_ear: Optional[bool] = None
+        self._pending_count = 0
 
 
 class AurisApp:
@@ -137,19 +143,37 @@ class AurisApp:
         """Pause media when pods leave the ears, resume when they return.
 
         Experimental: driven by the best-effort in-ear signal from the
-        broadcast. Off unless the user enables it in Settings.
+        broadcast. Off unless the user enables it in Settings. A change must be
+        seen ``AUTO_PAUSE_DEBOUNCE`` advertisements in a row before we act, so a
+        single stray reading can't toggle playback.
         """
         if not self.config["auto_pause"] or status.in_ear is None:
-            dev.in_ear = status.in_ear
+            dev._pending_in_ear = None
+            dev._pending_count = 0
             return
-        prev = dev.in_ear
-        dev.in_ear = status.in_ear
-        if prev is None or prev == status.in_ear:
-            return  # no transition
-        if status.in_ear:
-            media.play()
+
+        new = status.in_ear
+        if new == dev.in_ear:
+            dev._pending_in_ear = None  # back in agreement, cancel any candidate
+            dev._pending_count = 0
+            return
+
+        # `new` disagrees with the confirmed state — build confidence first.
+        if new == dev._pending_in_ear:
+            dev._pending_count += 1
         else:
-            media.pause()
+            dev._pending_in_ear = new
+            dev._pending_count = 1
+
+        if dev._pending_count < AUTO_PAUSE_DEBOUNCE:
+            return
+
+        dev.in_ear = new
+        dev._pending_in_ear = None
+        dev._pending_count = 0
+        if dev.in_ear is None:
+            return
+        media.play() if dev.in_ear else media.pause()
 
     # ---- helpers ------------------------------------------------------------
     def _check_low_battery(self, dev: Device) -> None:

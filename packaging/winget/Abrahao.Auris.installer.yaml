@@ -1,0 +1,21 @@
+# Template for submitting Auris to the winget community repo
+# (microsoft/winget-pkgs). Fill InstallerSha256 with the hash of the RELEASED
+# AurisSetup.exe (see README.md in this folder), bump the version/URL, then
+# submit all three yaml files. Once merged, users install with:
+#     winget install Abrahao.Auris
+PackageIdentifier: Abrahao.Auris
+PackageVersion: 0.3.0
+InstallerLocale: en-US
+InstallerType: inno
+Scope: user
+InstallModes:
+  - interactive
+  - silent
+  - silentWithProgress
+UpgradeBehavior: install
+Installers:
+  - Architecture: x64
+    InstallerUrl: https://github.com/abrahao-dev/auris/releases/download/v0.3.0/AurisSetup.exe
+    InstallerSha256: REPLACE_WITH_SHA256_OF_RELEASED_INSTALLER
+ManifestType: installer
+ManifestVersion: 1.6.0
