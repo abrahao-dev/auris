@@ -15,6 +15,8 @@ A free, transparent alternative to closed-source apps like MagicPods.
 
 **English** · [Português (Brasil)](README.pt-BR.md)
 
+<img src="docs/preview.png" alt="Auris tray battery icons" width="560">
+
 </div>
 
 > [!NOTE]
@@ -30,8 +32,11 @@ A free, transparent alternative to closed-source apps like MagicPods.
 - 🎧 Works with **AirPods** (1–4, Pro, Pro 2, Max) and many **Beats** models
 - 🔔 **Low-battery** and **connect** notifications (native toast on Windows, `notify-send` on Linux)
 - 🖼️ Battery ring drawn onto the **tray icon** for an at-a-glance read
+- 🚀 **Start with system** toggle (Windows registry / Linux autostart)
+- ⏸️ **Auto-pause** when you take the pods out — resume when back in *(experimental)*
+- ⚙️ **Settings** right-click menu — toggle everything, no config file editing
 - 🪟 **Windows** + 🐧 **Linux** (BlueZ) from one Python codebase
-- 🧾 MIT-licensed, no telemetry, ~600 lines of readable code
+- 🧾 MIT-licensed, no telemetry, small and readable code
 
 ## 📥 Download
 
@@ -122,10 +127,24 @@ pip install pyinstaller
 pyinstaller Auris.spec             # output in dist/
 ```
 
+## ⚙️ Settings
+
+Right-click the tray icon → **Settings**:
+
+- **Start with system** — launch Auris at login (Windows `Run` key / Linux `.desktop`)
+- **Notify on connect** — toast when a device is detected
+- **Auto-pause (experimental)** — pause media when both pods leave your ears and
+  resume when they return. Driven by a best-effort in-ear signal from the BLE
+  broadcast; robust per-pod detection needs a connected session, so it's off by
+  default. On Linux it uses `playerctl` (MPRIS) if installed.
+
+Settings persist to a small JSON file under your user profile.
+
 ## 🗺️ Roadmap
 
-- [ ] Ear-detection auto-pause (parse in-ear flags → media keys)
-- [ ] Windows startup entry / Linux `.desktop` autostart
+- [x] Ear-detection auto-pause *(experimental)*
+- [x] Start-with-system (Windows / Linux autostart)
+- [ ] Robust in-ear detection over a connected AAP session
 - [ ] Optional Windows 11 widget
 - [ ] Per-device naming and multiple-device UI
 - [ ] Code-signed Windows builds

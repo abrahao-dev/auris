@@ -24,6 +24,9 @@ DEFAULTS: dict = {
     "low_battery_threshold": 20,
     # Show a notification when a device connects.
     "notify_on_connect": True,
+    # Experimental: pause media when pods leave your ears, resume when back in.
+    # Relies on a best-effort in-ear signal from the BLE broadcast.
+    "auto_pause": False,
     # Seconds without an advertisement before we consider a device gone.
     "disconnect_timeout": 30,
     # Log decoded advertisements to the console.

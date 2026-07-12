@@ -70,6 +70,11 @@ class PodsStatus:
     # "single" devices (Max, over-ear Beats) report one battery -> `.single`.
     single: Battery
     lid_open: Optional[bool]
+    # Best-effort in-ear signal from the broadcast status byte. Robust per-pod
+    # ear detection needs a connected AAP session, so this is experimental and
+    # only consumed by the (off-by-default) auto-pause feature.
+    in_ear: Optional[bool]
+    status_flags: int
     raw_hex: str
 
     def to_dict(self) -> dict:
@@ -164,6 +169,16 @@ def decode_payload(payload: bytes) -> Optional[PodsStatus]:
         lid_byte = payload[8]
         lid_open = bool(lid_byte & 0x08) if family == models.FAMILY_BUDS else None
 
+    # Status byte (payload[5]) carries in-ear-related flags. The exact semantics
+    # vary and are only fully reliable over a connected session, so we expose a
+    # best-effort "at least one pod in ear" signal for the experimental
+    # auto-pause feature. Bit 0x02 of the low nibble tracks in-ear on the models
+    # tested by the community; unknown => None.
+    status_flags = payload[5]
+    in_ear: Optional[bool] = None
+    if family == models.FAMILY_BUDS:
+        in_ear = bool(status_flags & 0x02)
+
     return PodsStatus(
         model_id=model_id,
         model_name=model_name,
@@ -173,5 +188,7 @@ def decode_payload(payload: bytes) -> Optional[PodsStatus]:
         case=case,
         single=single,
         lid_open=lid_open,
+        in_ear=in_ear,
+        status_flags=status_flags,
         raw_hex=h,
     )

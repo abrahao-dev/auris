@@ -16,6 +16,8 @@ fechado como o MagicPods.
 
 [English](README.md) · **Português (Brasil)**
 
+<img src="docs/preview.png" alt="Ícones de bateria do Auris na bandeja" width="560">
+
 </div>
 
 > [!NOTE]
@@ -32,8 +34,11 @@ fechado como o MagicPods.
 - 🎧 Funciona com **AirPods** (1–4, Pro, Pro 2, Max) e vários modelos **Beats**
 - 🔔 Notificações de **bateria baixa** e de **conexão** (toast nativo no Windows, `notify-send` no Linux)
 - 🖼️ Anel de bateria desenhado no **ícone da bandeja** para leitura rápida
+- 🚀 Opção **iniciar com o sistema** (registro do Windows / autostart do Linux)
+- ⏸️ **Auto-pausa** ao tirar os fones do ouvido — retoma ao recolocar *(experimental)*
+- ⚙️ Menu **Configurações** no botão direito — ligue/desligue tudo, sem editar arquivo
 - 🪟 **Windows** + 🐧 **Linux** (BlueZ) a partir de um único código em Python
-- 🧾 Licença MIT, sem telemetria, ~600 linhas de código legível
+- 🧾 Licença MIT, sem telemetria, código pequeno e legível
 
 ## 📥 Download
 
@@ -127,10 +132,24 @@ pip install pyinstaller
 pyinstaller Auris.spec             # saída em dist/
 ```
 
+## ⚙️ Configurações
+
+Clique com o botão direito no ícone da bandeja → **Settings**:
+
+- **Start with system** — inicia o Auris ao logar (chave `Run` no Windows / `.desktop` no Linux)
+- **Notify on connect** — notifica quando um dispositivo é detectado
+- **Auto-pause (experimental)** — pausa a mídia quando os dois fones saem do
+  ouvido e retoma quando voltam. Usa um sinal de in-ear de melhor-esforço vindo
+  do anúncio BLE; a detecção robusta por fone precisa de uma sessão conectada,
+  então vem desligada por padrão. No Linux usa `playerctl` (MPRIS) se instalado.
+
+As configurações são salvas em um pequeno arquivo JSON no seu perfil de usuário.
+
 ## 🗺️ Planejamento (roadmap)
 
-- [ ] Auto-pausa por detecção no ouvido (ler flags de in-ear → teclas de mídia)
-- [ ] Iniciar com o Windows / autostart `.desktop` no Linux
+- [x] Auto-pausa por detecção no ouvido *(experimental)*
+- [x] Iniciar com o sistema (autostart Windows / Linux)
+- [ ] Detecção in-ear robusta via sessão AAP conectada
 - [ ] Widget opcional do Windows 11
 - [ ] Nomear dispositivos e UI para múltiplos aparelhos
 - [ ] Builds do Windows assinadas digitalmente

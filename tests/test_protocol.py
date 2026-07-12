@@ -85,6 +85,47 @@ def test_summary_formats():
     assert "AirPods Pro" in line and "L 100%" in line and "R 90%" in line
 
 
+def test_in_ear_flag_parsed():
+    # status byte 0x23 has the in-ear bit (0x02) set; 0x21 does not.
+    assert protocol.decode(_mfg("0719010e20239a4600" + "00" * 18)).in_ear is True
+    assert protocol.decode(_mfg("0719010e20219a4600" + "00" * 18)).in_ear is False
+
+
+def test_in_ear_none_for_single_devices():
+    # AirPods Max (single battery) doesn't expose per-pod in-ear here.
+    s = protocol.decode(_mfg("0719010a2023800f" + "00" * 19))
+    assert s.in_ear is None
+
+
+def test_auto_pause_transition_logic():
+    # Exercise the app's edge detection without a real tray or media session.
+    # Skips when GUI deps (pystray) aren't installed, e.g. the lean CI job.
+    import types
+
+    try:
+        from auris import app as app_mod
+    except ImportError:
+        print("  skip test_auto_pause_transition_logic (pystray not installed)")
+        return
+
+    events = []
+    dev = app_mod.Device("AA", protocol.decode(_mfg("0719010e20239a4600" + "00" * 18)))
+    fake = types.SimpleNamespace(config={"auto_pause": True})
+    handler = app_mod.AurisApp._maybe_auto_pause
+
+    orig_play, orig_pause = app_mod.media.play, app_mod.media.pause
+    app_mod.media.play = lambda: events.append("play")
+    app_mod.media.pause = lambda: events.append("pause")
+    try:
+        out = protocol.decode(_mfg("0719010e20219a4600" + "00" * 18))   # in_ear False
+        handler(fake, dev, out)                                          # -> pause
+        back = protocol.decode(_mfg("0719010e20239a4600" + "00" * 18))  # in_ear True
+        handler(fake, dev, back)                                         # -> play
+    finally:
+        app_mod.media.play, app_mod.media.pause = orig_play, orig_pause
+    assert events == ["pause", "play"], events
+
+
 if __name__ == "__main__":
     fns = [v for k, v in sorted(globals().items()) if k.startswith("test_")]
     failed = 0

@@ -14,8 +14,8 @@ from typing import Optional
 
 import pystray
 
-from . import icon as icon_render
-from . import notifications, scanner
+from . import autostart, icon as icon_render
+from . import media, notifications, scanner
 from .config import Config
 from .models import FAMILY_SINGLE
 from .protocol import PodsStatus
@@ -29,6 +29,8 @@ class Device:
         self.status = status
         self.last_seen = time.monotonic()
         self.low_notified = False
+        # Last in-ear state we acted on, for auto-pause edge detection.
+        self.in_ear = status.in_ear
 
 
 class AurisApp:
@@ -68,11 +70,38 @@ class AurisApp:
 
     # ---- menu ---------------------------------------------------------------
     def _build_menu(self) -> pystray.Menu:
+        settings = pystray.Menu(
+            pystray.MenuItem(
+                "Start with system",
+                self._toggle_autostart,
+                checked=lambda _i: autostart.is_enabled(),
+            ),
+            pystray.MenuItem(
+                "Notify on connect",
+                self._toggle("notify_on_connect"),
+                checked=lambda _i: bool(self.config["notify_on_connect"]),
+            ),
+            pystray.MenuItem(
+                "Auto-pause (experimental)",
+                self._toggle("auto_pause"),
+                checked=lambda _i: bool(self.config["auto_pause"]),
+            ),
+        )
         return pystray.Menu(
             pystray.MenuItem(lambda _i: self._status_line(), None, enabled=False),
             pystray.Menu.SEPARATOR,
+            pystray.MenuItem("Settings", settings),
             pystray.MenuItem("Quit", self._quit),
         )
+
+    def _toggle(self, key: str):
+        """Return a menu handler that flips a boolean config key."""
+        def handler(_icon, _item):
+            self.config[key] = not bool(self.config[key])
+        return handler
+
+    def _toggle_autostart(self, _icon, _item) -> None:
+        autostart.set_enabled(not autostart.is_enabled())
 
     def _status_line(self) -> str:
         with self._lock:
@@ -98,10 +127,29 @@ class AurisApp:
             notifications.notify("Auris", f"Connected: {connected}")
 
         self._check_low_battery(dev)
+        self._maybe_auto_pause(dev, status)
         self._prune()
         self._refresh_icon()
         # The menu structure is constant; its text is a live callable, so it
         # never needs rebuilding when devices change.
+
+    def _maybe_auto_pause(self, dev: Device, status: PodsStatus) -> None:
+        """Pause media when pods leave the ears, resume when they return.
+
+        Experimental: driven by the best-effort in-ear signal from the
+        broadcast. Off unless the user enables it in Settings.
+        """
+        if not self.config["auto_pause"] or status.in_ear is None:
+            dev.in_ear = status.in_ear
+            return
+        prev = dev.in_ear
+        dev.in_ear = status.in_ear
+        if prev is None or prev == status.in_ear:
+            return  # no transition
+        if status.in_ear:
+            media.play()
+        else:
+            media.pause()
 
     # ---- helpers ------------------------------------------------------------
     def _check_low_battery(self, dev: Device) -> None:
