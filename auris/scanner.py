@@ -9,7 +9,8 @@ on both platforms. We passively listen; we never connect or pair.
 from __future__ import annotations
 
 import asyncio
-from typing import Awaitable, Callable, Optional
+import threading
+from typing import Callable, Optional
 
 from bleak import BleakScanner
 from bleak.backends.device import BLEDevice
@@ -53,9 +54,6 @@ class Scanner:
 def run_in_thread(on_status: StatusCallback, verbose: bool = False) -> "ScannerThread":
     """Start scanning on a private asyncio loop in a daemon thread."""
     return ScannerThread(on_status, verbose)
-
-
-import threading  # noqa: E402  (kept near its only user)
 
 
 class ScannerThread:

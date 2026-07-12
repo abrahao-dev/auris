@@ -1,0 +1,78 @@
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: build (${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            artifact: Auris.exe
+          - os: ubuntu-latest
+            artifact: auris-linux
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Linux tray/BLE system deps
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y xvfb libxext6 libxrender1 libxtst6 libxi6
+
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt pyinstaller
+          # Pure-python Xorg tray backend for the Linux build.
+          if [ "${{ runner.os }}" = "Linux" ]; then pip install python-xlib; fi
+        shell: bash
+
+      - name: Build binary
+        run: pyinstaller --noconfirm --clean Auris.spec
+
+      - name: Smoke test (Windows)
+        if: runner.os == 'Windows'
+        run: ./dist/Auris.exe --selftest
+
+      - name: Smoke test (Linux, headless)
+        if: runner.os == 'Linux'
+        run: xvfb-run -a ./dist/auris-linux --selftest
+        continue-on-error: true
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact }}
+          path: dist/${{ matrix.artifact }}
+          if-no-files-found: error
+
+  release:
+    name: publish release
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+          merge-multiple: true
+
+      - name: Publish GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: artifacts/*
+          generate_release_notes: true
+          fail_on_unmatched_files: true
