@@ -18,6 +18,10 @@ fechado como o MagicPods.
 
 [English](README.md) · **Português (Brasil)**
 
+<img src="docs/hero.jpg" alt="Auris — bateria dos AirPods no Windows e Linux" width="830">
+
+<sub>Banner conceitual — o Auris de verdade vive na <b>bandeja do sistema</b>. UI real abaixo. 👇</sub>
+
 <img src="docs/demo.gif" alt="Anel de bateria do Auris animando" width="132">
 
 <img src="docs/preview.png" alt="Estados do ícone de bateria do Auris" width="560">

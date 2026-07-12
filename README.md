@@ -17,6 +17,10 @@ A free, transparent alternative to closed-source apps like MagicPods.
 
 **English** · [Português (Brasil)](README.pt-BR.md)
 
+<img src="docs/hero.jpg" alt="Auris — AirPods battery on Windows and Linux" width="830">
+
+<sub>Concept banner — Auris actually lives in your <b>system tray</b>. Real UI below. 👇</sub>
+
 <img src="docs/demo.gif" alt="Auris battery ring animating" width="132">
 
 <img src="docs/preview.png" alt="Auris tray battery icon states" width="560">
