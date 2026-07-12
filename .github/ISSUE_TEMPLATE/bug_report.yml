@@ -1,0 +1,43 @@
+name: 🐛 Bug report
+description: Something broken? Battery not showing, wrong model, crash? (English or Português)
+labels: [bug]
+body:
+  - type: dropdown
+    id: os
+    attributes:
+      label: Operating system
+      options:
+        - Windows 11
+        - Windows 10
+        - Linux (specify distro below)
+    validations:
+      required: true
+  - type: input
+    id: device
+    attributes:
+      label: Earbud model
+      placeholder: e.g. AirPods Pro 2, Beats Studio Buds
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Auris version / install method
+      placeholder: e.g. v0.3.0 AurisSetup.exe, or running from source
+    validations:
+      required: true
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: What did you expect, and what did you see instead?
+    validations:
+      required: true
+  - type: textarea
+    id: cli-output
+    attributes:
+      label: "`python -m auris --cli` output (if possible)"
+      description: >
+        A few lines of decoded advertisements help enormously. They contain
+        only battery/charging data — no personal information.
+      render: text

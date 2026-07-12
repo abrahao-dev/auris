@@ -12,6 +12,8 @@ A free, transparent alternative to closed-source apps like MagicPods.
 [![Python](https://img.shields.io/badge/python-3.10%2B-blue.svg)](https://www.python.org/)
 [![Release](https://img.shields.io/github/v/release/abrahao-dev/auris?include_prereleases&sort=semver)](https://github.com/abrahao-dev/auris/releases/latest)
 [![CI](https://github.com/abrahao-dev/auris/actions/workflows/ci.yml/badge.svg)](https://github.com/abrahao-dev/auris/actions/workflows/ci.yml)
+[![Downloads](https://img.shields.io/github/downloads/abrahao-dev/auris/total.svg)](https://github.com/abrahao-dev/auris/releases)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
 
 **English** · [Português (Brasil)](README.pt-BR.md)
 
@@ -46,8 +48,12 @@ Grab a ready-to-run build from the [**latest release**](https://github.com/abrah
 
 | Platform | File | How to run |
 |----------|------|------------|
-| 🪟 **Windows 10/11** | `Auris.exe` | Double-click it. Auris appears in the system tray. |
+| 🪟 **Windows 10/11** (installer) | `AurisSetup.exe` | Run it — per-user install, no admin needed. Adds Start Menu and optional startup shortcuts. |
+| 🪟 **Windows 10/11** (portable) | `Auris.exe` | Double-click it. Auris appears in the system tray. |
 | 🐧 **Linux (x86-64)** | `auris-linux` | `chmod +x auris-linux && ./auris-linux` |
+
+`winget install Abrahao.Auris` is on the way — the manifest lives in
+[`packaging/winget/`](packaging/winget/) pending publication.
 
 > Windows may show a SmartScreen warning because the binary isn't code-signed
 > (it's an open-source community build) — click **More info → Run anyway**, or
@@ -151,7 +157,19 @@ Settings persist to a small JSON file under your user profile.
 - [ ] Per-device naming and multiple-device UI
 - [ ] Code-signed Windows builds
 
-Contributions welcome — the decoder is the fun part and it's small.
+## 🤝 Contributing
+
+Contributions of any size are welcome — the decoder is the fun part and it's
+small. Good entry points:
+
+- 🐛 [Open an issue](https://github.com/abrahao-dev/auris/issues/new/choose) — bug reports with a `python -m auris --cli` dump are gold
+- 🎧 Add a model id to [`auris/models.py`](auris/models.py) if your earbuds show up as *Unknown*
+- 🌍 Improve the translations (English / [Português](README.pt-BR.md))
+- 🧪 Extend the decoder tests in [`tests/test_protocol.py`](tests/test_protocol.py)
+
+Read [CONTRIBUTING.md](CONTRIBUTING.md) for the workflow, and note the
+[Code of Conduct](CODE_OF_CONDUCT.md). Release history lives in the
+[CHANGELOG](CHANGELOG.md); security reports go through [SECURITY.md](SECURITY.md).
 
 ## 🙌 Credits & prior art
 

@@ -13,6 +13,8 @@ fechado como o MagicPods.
 [![Python](https://img.shields.io/badge/python-3.10%2B-blue.svg)](https://www.python.org/)
 [![Release](https://img.shields.io/github/v/release/abrahao-dev/auris?include_prereleases&sort=semver)](https://github.com/abrahao-dev/auris/releases/latest)
 [![CI](https://github.com/abrahao-dev/auris/actions/workflows/ci.yml/badge.svg)](https://github.com/abrahao-dev/auris/actions/workflows/ci.yml)
+[![Downloads](https://img.shields.io/github/downloads/abrahao-dev/auris/total.svg)](https://github.com/abrahao-dev/auris/releases)
+[![PRs Welcome](https://img.shields.io/badge/PRs-bem--vindos-brightgreen.svg)](CONTRIBUTING.md)
 
 [English](README.md) · **Português (Brasil)**
 
@@ -48,8 +50,12 @@ Baixe uma versão pronta pra usar na [**última release**](https://github.com/ab
 
 | Plataforma | Arquivo | Como executar |
 |------------|---------|---------------|
-| 🪟 **Windows 10/11** | `Auris.exe` | Dê dois cliques. O Auris aparece na bandeja do sistema. |
+| 🪟 **Windows 10/11** (instalador) | `AurisSetup.exe` | Execute — instalação por usuário, sem admin. Cria atalho no Menu Iniciar e opção de iniciar com o sistema. |
+| 🪟 **Windows 10/11** (portátil) | `Auris.exe` | Dê dois cliques. O Auris aparece na bandeja do sistema. |
 | 🐧 **Linux (x86-64)** | `auris-linux` | `chmod +x auris-linux && ./auris-linux` |
+
+`winget install Abrahao.Auris` está a caminho — o manifesto está em
+[`packaging/winget/`](packaging/winget/) aguardando publicação.
 
 > O Windows pode exibir um aviso do SmartScreen porque o binário não é assinado
 > digitalmente (é uma build open-source da comunidade) — clique em
@@ -156,7 +162,19 @@ As configurações são salvas em um pequeno arquivo JSON no seu perfil de usuá
 - [ ] Nomear dispositivos e UI para múltiplos aparelhos
 - [ ] Builds do Windows assinadas digitalmente
 
-Contribuições são bem-vindas — o decodificador é a parte divertida e é pequeno.
+## 🤝 Contribuindo
+
+Contribuições de qualquer tamanho são bem-vindas — o decodificador é a parte
+divertida e é pequeno. Bons pontos de entrada:
+
+- 🐛 [Abra uma issue](https://github.com/abrahao-dev/auris/issues/new/choose) — reports de bug com a saída de `python -m auris --cli` valem ouro
+- 🎧 Adicione um id de modelo em [`auris/models.py`](auris/models.py) se seu fone aparecer como *Unknown*
+- 🌍 Melhore as traduções ([English](README.md) / Português)
+- 🧪 Amplie os testes do decodificador em [`tests/test_protocol.py`](tests/test_protocol.py)
+
+Leia o [CONTRIBUTING.md](CONTRIBUTING.md) para o fluxo de trabalho e observe o
+[Código de Conduta](CODE_OF_CONDUCT.md). O histórico de versões está no
+[CHANGELOG](CHANGELOG.md); reportes de segurança seguem o [SECURITY.md](SECURITY.md).
 
 ## 🙌 Créditos e trabalhos anteriores
 
