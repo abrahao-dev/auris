@@ -1,0 +1,31 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "auris"
+version = "0.1.0"
+description = "Open-source AirPods & Bluetooth-earbuds companion for Windows & Linux"
+readme = "README.md"
+license = { text = "MIT" }
+requires-python = ">=3.10"
+authors = [{ name = "Auris contributors" }]
+keywords = ["airpods", "bluetooth", "battery", "windows", "linux", "tray", "beats"]
+dependencies = [
+    "bleak>=0.22",
+    "pystray>=0.19",
+    "Pillow>=10.0",
+    'winotify>=1.1 ; sys_platform == "win32"',
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=7"]
+
+[project.scripts]
+auris = "auris.app:main"
+
+[project.gui-scripts]
+auris-tray = "auris.app:main"
+
+[tool.setuptools]
+packages = ["auris"]
